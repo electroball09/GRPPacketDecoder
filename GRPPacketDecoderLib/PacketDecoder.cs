@@ -75,23 +75,9 @@ namespace GRPPacketDecoderLib
 
             //position in the packet after the above data, since packet specific data is variable
             int position = 10;
-            int specialDataSize = 0;
-            if (packet.IsType(PacketType.TYPE_CONNECT) || packet.IsType(PacketType.TYPE_SYN))
-            {
-                specialDataSize += 4;
-            }
-            else if (packet.IsType(PacketType.TYPE_DATA))
-            {
-                specialDataSize += 1;
-            }
-            if (packet.HasFlag(PacketFlags.FLAG_HAS_SIZE))
-            {
-                specialDataSize += 2;
-            }
 
-            packet.SpecialData = new byte[specialDataSize];
-            Array.Copy(datas, position, packet.SpecialData, 0, specialDataSize);
-            position += specialDataSize;
+            Array.Copy(datas, position, packet.SpecialData, 0, packet.SpecialData.Length);
+            position += packet.SpecialData.Length;
 
             int payloadSize = datas.Length - position - CHECKSUM_SIZE;
             packet.Payload = new byte[datas.Length - position - CHECKSUM_SIZE];
@@ -116,7 +102,7 @@ namespace GRPPacketDecoderLib
             buffer[2] = packet.TypeFlags;
             buffer[3] = packet.SessionID;
             Array.Copy(packet.PacketSignature, 0, buffer, 4, 4);
-            Array.ConstrainedCopy(BitConverter.GetBytes(packet.SequenceID), 0, buffer, 8, 2);
+            Array.Copy(BitConverter.GetBytes(packet.SequenceID), 0, buffer, 8, 2);
             int pos = 10;
             Array.Copy(packet.SpecialData, 0, buffer, pos, packet.SpecialData.Length);
             pos += packet.SpecialData.Length;
@@ -172,9 +158,10 @@ namespace GRPPacketDecoderLib
             Console.WriteLine(" PayloadLen: {0}", packet.Payload.Length.ToString());
             Console.WriteLine("   Checksum: {0}", BitConverter.ToString(packet.Checksum).Replace("-", string.Empty));
 
-            //byte[] dataWithoutChkSum = new byte[packet.RawData.Length - 4];
-            //int chkSum = V0_CalcChecksum_32bit(dataWithoutChkSum, "cH0on9AsIXx7");
-            //Console.WriteLine(" CalcChkSum: {0}", BitConverter.ToString(BitConverter.GetBytes(chkSum)).Replace("-", string.Empty));
+            byte[] dataWithoutChkSum = new byte[packet.RawData.Length - 4];
+            Array.Copy(packet.RawData, 0, dataWithoutChkSum, 0, dataWithoutChkSum.Length);
+            int chkSum = V0_CalcChecksum_32bit(dataWithoutChkSum, "cH0on9AsIXx7");
+            Console.WriteLine(" CalcChkSum: {0}", BitConverter.ToString(BitConverter.GetBytes(chkSum)).Replace("-", string.Empty));
         }
 
         public static byte V0_CalcChecksum(byte[] Data, string AccessKey)
@@ -208,7 +195,21 @@ namespace GRPPacketDecoderLib
 
         public byte Source;
         public byte Destination;
-        public byte TypeFlags;
+
+        private byte typeFlags;
+        public byte TypeFlags
+        {
+            get
+            {
+                return typeFlags;
+            }
+            set
+            {
+                typeFlags = value;
+                ResetSpecialData();
+            }
+        }
+
         public byte SessionID;
         public byte[] PacketSignature;
         public ushort SequenceID;
@@ -220,8 +221,8 @@ namespace GRPPacketDecoderLib
         {
             get
             {
-                if ((TypeFlags & 7) != (byte)PacketType.TYPE_SYN &&
-                    (TypeFlags & 7) != (byte)PacketType.TYPE_CONNECT)
+                if ((typeFlags & 7) != (byte)PacketType.TYPE_SYN &&
+                    (typeFlags & 7) != (byte)PacketType.TYPE_CONNECT)
                 {
                     return 0;
                 }
@@ -230,8 +231,8 @@ namespace GRPPacketDecoderLib
             }
             set
             {
-                if ((TypeFlags & 7) != (byte)PacketType.TYPE_SYN &&
-                    (TypeFlags & 7) != (byte)PacketType.TYPE_CONNECT)
+                if ((typeFlags & 7) != (byte)PacketType.TYPE_SYN &&
+                    (typeFlags & 7) != (byte)PacketType.TYPE_CONNECT)
                 {
                     return;
                 }
@@ -245,14 +246,14 @@ namespace GRPPacketDecoderLib
         {
             get
             {
-                if ((TypeFlags & 7) != (byte)PacketType.TYPE_DATA)
+                if ((typeFlags & 7) != (byte)PacketType.TYPE_DATA)
                     return 0;
 
                 return SpecialData[0];
             }
             set
             {
-                if ((TypeFlags & 7) != (byte)PacketType.TYPE_DATA)
+                if ((typeFlags & 7) != (byte)PacketType.TYPE_DATA)
                     return;
 
                 SpecialData[0] = value;
@@ -263,14 +264,14 @@ namespace GRPPacketDecoderLib
         {
             get
             {
-                if ((TypeFlags & (byte)PacketFlags.FLAG_HAS_SIZE) == 0)
+                if ((typeFlags & (byte)PacketFlags.FLAG_HAS_SIZE) == 0)
                     return 0;
 
                 return BitConverter.ToUInt16(SpecialData, SpecialData.Length - 2);
             }
             set
             {
-                if ((TypeFlags & (byte)PacketFlags.FLAG_HAS_SIZE) == 0)
+                if ((typeFlags & (byte)PacketFlags.FLAG_HAS_SIZE) == 0)
                     return;
 
                 byte[] bytes = BitConverter.GetBytes(value);
@@ -280,12 +281,31 @@ namespace GRPPacketDecoderLib
 
         public bool IsType(PacketType type)
         {
-            return (TypeFlags & 7) == (byte)type;
+            return (typeFlags & 7) == (byte)type;
         }
 
         public bool HasFlag(PacketFlags flag)
         {
-            return (TypeFlags & (byte)flag) != 0;
+            return (typeFlags & (byte)flag) != 0;
+        }
+
+        public void ResetSpecialData()
+        {
+            int specialDataSize = 0;
+            if (IsType(PacketType.TYPE_CONNECT) || IsType(PacketType.TYPE_SYN))
+            {
+                specialDataSize += 4;
+            }
+            else if (IsType(PacketType.TYPE_DATA))
+            {
+                specialDataSize += 1;
+            }
+            if (HasFlag(PacketFlags.FLAG_HAS_SIZE))
+            {
+                specialDataSize += 2;
+            }
+
+            SpecialData = new byte[specialDataSize];
         }
     }
 
