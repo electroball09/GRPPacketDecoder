@@ -5,6 +5,8 @@ VisualStudioVersion = 15.0.27703.2042
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GRPPacketDecoder", "GRPPacketDecoder\GRPPacketDecoder.csproj", "{4E2A23E6-D431-4816-9651-427732516B41}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GRPPacketDecoderLib", "GRPPacketDecoderLib\GRPPacketDecoderLib.csproj", "{047CE4FF-1DA2-4AC5-8FCA-4EDFF1E641A2}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +17,10 @@ Global
 		{4E2A23E6-D431-4816-9651-427732516B41}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4E2A23E6-D431-4816-9651-427732516B41}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4E2A23E6-D431-4816-9651-427732516B41}.Release|Any CPU.Build.0 = Release|Any CPU
+		{047CE4FF-1DA2-4AC5-8FCA-4EDFF1E641A2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{047CE4FF-1DA2-4AC5-8FCA-4EDFF1E641A2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{047CE4FF-1DA2-4AC5-8FCA-4EDFF1E641A2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{047CE4FF-1DA2-4AC5-8FCA-4EDFF1E641A2}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
