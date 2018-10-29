@@ -53,6 +53,19 @@ namespace GRPPacketDecoderLib
         }
     }
 
+    internal static class C
+    {
+        public static void Write(string format, object arg, ConsoleColor col)
+        {
+            
+        }
+
+        public static void WriteLine()
+        {
+
+        }
+    }
+
     public class PacketDecoder
     {
         public static readonly byte[] CryptKey = { 67, 68, 38, 77, 76 }; //CD&ML
@@ -158,10 +171,10 @@ namespace GRPPacketDecoderLib
             Console.WriteLine(" PayloadLen: {0}", packet.Payload.Length.ToString());
             Console.WriteLine("   Checksum: {0}", BitConverter.ToString(packet.Checksum).Replace("-", string.Empty));
 
-            byte[] dataWithoutChkSum = new byte[packet.RawData.Length - 4];
-            Array.Copy(packet.RawData, 0, dataWithoutChkSum, 0, dataWithoutChkSum.Length);
-            int chkSum = V0_CalcChecksum_32bit(dataWithoutChkSum, "cH0on9AsIXx7");
-            Console.WriteLine(" CalcChkSum: {0}", BitConverter.ToString(BitConverter.GetBytes(chkSum)).Replace("-", string.Empty));
+            //byte[] dataWithoutChkSum = new byte[packet.RawData.Length - 4];
+            //Array.Copy(packet.RawData, 0, dataWithoutChkSum, 0, dataWithoutChkSum.Length);
+            //int chkSum = V0_CalcChecksum_32bit(dataWithoutChkSum, "cH0on9AsIXx7");
+            //Console.WriteLine(" CalcChkSum: {0}", BitConverter.ToString(BitConverter.GetBytes(chkSum)).Replace("-", string.Empty));
         }
 
         public static byte V0_CalcChecksum(byte[] Data, string AccessKey)
