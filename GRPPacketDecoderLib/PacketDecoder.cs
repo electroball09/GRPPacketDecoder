@@ -291,23 +291,23 @@ namespace GRPPacketDecoderLib
 
     public enum PacketType : byte
     {
-        TYPE_SYN = 0b00000000,
-        TYPE_CONNECT = 0b00000001,
-        TYPE_DATA = 0b00000010,
+        TYPE_SYN        = 0b00000000,
+        TYPE_CONNECT    = 0b00000001,
+        TYPE_DATA       = 0b00000010,
         TYPE_DISCONNECT = 0b00000011,
-        TYPE_PING = 0b00000100,
-        TYPE_UNK_01 = 0b00000101,
-        TYPE_UNK_02 = 0b00000110,
-        TYPE_UNK_03 = 0b00000111,
+        TYPE_PING       = 0b00000100,
+        TYPE_UNK_01     = 0b00000101,
+        TYPE_UNK_02     = 0b00000110,
+        TYPE_UNK_03     = 0b00000111,
     }
 
     [Flags]
     public enum PacketFlags : byte
     {
-        FLAG_ACK = 0b00001000,
-        FLAG_RELIABLE = 0b00010000,
-        FLAG_NEED_ACK = 0b00100000,
-        FLAG_HAS_SIZE = 0b01000000,
-        FLAG_MULTI_ACK = 0b10000000, //maybe
+        FLAG_ACK        = 0b00001000,
+        FLAG_RELIABLE   = 0b00010000,
+        FLAG_NEED_ACK   = 0b00100000,
+        FLAG_HAS_SIZE   = 0b01000000,
+        FLAG_MULTI_ACK  = 0b10000000, //maybe
     }
 }
